@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5005;
 
@@ -27,16 +27,55 @@ async function run() {
 
     const coffeCollection = client.db("LondonBrewDB").collection("coffee");
 
+    // getting all the data from db to UI
     app.get("/coffee", async (req, res) => {
       const cursor = coffeCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
 
+    // getting specific data to UI
+    app.get("/coffee/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await coffeCollection.findOne(query);
+      res.send(result);
+    });
+
+    //sending data to database from UI
     app.post("/coffee", async (req, res) => {
       const newCoffee = req.body;
       console.log(newCoffee);
       const result = await coffeCollection.insertOne(newCoffee);
+      res.send(result);
+    });
+
+    // updating coffee data
+    app.put("/coffee/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedCoffee = req.body;
+      const coffee = {
+        $set: {
+          name: updatedCoffee.name,
+          chef: updatedCoffee.chef,
+          supplier: updatedCoffee.chef,
+          taste: updatedCoffee.taste,
+          details: updatedCoffee.details,
+          category: updatedCoffee.category,
+          photoURL: updatedCoffee.photoURL,
+        },
+      };
+      const result = await coffeCollection.updateOne(filter, coffee, options);
+      res.send(result);
+    });
+
+    // deleting specific data from db
+    app.delete("/coffee/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await coffeCollection.deleteOne(query);
       res.send(result);
     });
 
