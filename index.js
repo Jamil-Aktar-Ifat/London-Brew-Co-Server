@@ -26,6 +26,7 @@ async function run() {
     await client.connect();
 
     const coffeCollection = client.db("LondonBrewDB").collection("coffee");
+    const userCollection = client.db("LondonBrewDB").collection("users");
 
     // getting all the data from db to UI
     app.get("/coffee", async (req, res) => {
@@ -60,7 +61,7 @@ async function run() {
         $set: {
           name: updatedCoffee.name,
           chef: updatedCoffee.chef,
-          supplier: updatedCoffee.chef,
+          supplier: updatedCoffee.supplier,
           taste: updatedCoffee.taste,
           details: updatedCoffee.details,
           category: updatedCoffee.category,
@@ -76,6 +77,14 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await coffeCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // user related apis
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      console.log(user);
+      const result = await userCollection.insertOne(user);
       res.send(result);
     });
 
