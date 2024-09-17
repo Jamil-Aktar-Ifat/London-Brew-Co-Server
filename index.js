@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 5005;
 
 // Middleware
-app.use(cors({ origin: "*" })); // Allow requests from any origin, adjust as needed
+app.use(cors({ origin: "*" })); 
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.uphhg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -24,7 +24,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server
-    await client.connect();
+    // await client.connect();
 
     const coffeeCollection = client.db("LondonBrewDB").collection("coffee");
     const userCollection = client.db("LondonBrewDB").collection("users");
@@ -153,7 +153,7 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
